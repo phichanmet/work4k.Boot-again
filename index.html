@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SiamChronicle - คลังประวัติศาสตร์ชาติไทยเสมือนจริง</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome สำหรับไอคอน -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --primary: #1a2530;
+            --accent: #d4af37; /* สีทองคลาสสิก */
+            --accent-light: #f3e5ab;
+            --bg-color: #fcfbfa;
+            --text-main: #2c3e50;
+            --card-bg: #ffffff;
+            --transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        [data-theme="dark"] {
+            --primary: #f3e5ab;
+            --accent: #d4af37;
+            --bg-color: #121820;
+            --text-main: #e2e8f0;
+            --card-bg: #1e293b;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Sarabun', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            line-height: 1.8;
+            overflow-x: hidden;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        /* Navigation Bar */
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background: rgba(26, 37, 48, 0.95);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            border-bottom: 2px solid var(--accent);
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 2rem;
+        }
+
+        .logo {
+            font-family: 'Playfair Display', serif;
+            color: var(--accent);
+            font-size: 1.5rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1.5rem;
+            list-style: none;
+            align-items: center;
+        }
+
+        .nav-links a {
+            color: #fff;
+            text-decoration: none;
+            font-weight: 500;
+            transition: var(--transition);
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .nav-links a:hover, .nav-links a.active {
+            color: var(--accent);
+            background: rgba(212, 175, 55, 0.1);
+        }
+
+        .tools {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .theme-toggle, .menu-toggle {
+            background: none;
+            border: 1px solid var(--accent);
+            color: var(--accent);
+            padding: 0.5rem;
+            border-radius: 50%;
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+        }
+
+        .theme-toggle:hover {
+            background: var(--accent);
+            color: var(--primary);
+        }
+
+        .menu-toggle {
+            display: none;
+        }
+
+        /* Main Content Layout */
+        main {
+            max-width: 1200px;
+            margin: 120px auto 60px auto;
+            padding: 0 2rem;
+            min-height: 80vh;
+        }
+
+        .page-section {
+            display: none;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+
+        .page-section.active {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Hero / Home Page Style */
+        .hero-banner {
+            background: linear-gradient(rgba(26, 37, 48, 0.7), rgba(26, 37, 48, 0.85)), url('https://images.unsplash.com/photo-1588392382834-a891154bca4d?auto=format&fit=crop&w=1200&q=80') center/cover;
+            border-radius: 16px;
+            padding: 5rem 3rem;
+            color: #fff;
+            text-align: center;
+            margin-bottom: 3rem;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+            border: 1px solid var(--accent);
+        }
+
+        .hero-banner h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 3rem;
+            color: var(--accent);
+            margin-bottom: 1rem;
+        }
+
+        .hero-banner p {
+            font-size: 1.2rem;
+            max-width: 800px;
+            margin: 0 auto 2rem auto;
+            color: #e2e8f0;
+        }
+
+        .btn-gold {
+            background: var(--accent);
+            color: #1a2530;
+            padding: 0.8rem 2rem;
+            border: none;
+            border-radius: 30px;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: var(--transition);
+            box-shadow: 0 4px 15px rgba(212, 175, 55, 0.4);
+        }
+
+        .btn-gold:hover {
+            transform: translateY(-3px);
+            background: #e6c55c;
+        }
+
+        /* Grid Feature Cards */
+        .section-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 2rem;
+            margin-bottom: 2rem;
+            text-align: center;
+            position: relative;
+        }
+
+        .section-title::after {
+            content: '';
+            display: block;
+            width: 60px;
+            height: 3px;
+            background: var(--accent);
+            margin: 10px auto 0 auto;
+        }
+
+        .timeline-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .era-card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            transition: var(--transition);
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .era-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 35px rgba(212, 175, 55, 0.2);
+            border-color: var(--accent);
+        }
+
+        .era-img {
+            height: 200px;
+            width: 100%;
+            object-fit: cover;
+            transition: var(--transition);
+        }
+
+        .era-card:hover .era-img {
+            transform: scale(1.05);
+        }
+
+        .era-content {
+            padding: 1.5rem;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .era-content h3 {
+            font-size: 1.4rem;
+            margin-bottom: 0.5rem;
+            color: var(--accent);
+        }
+
+        .era-content p {
+            font-size: 0.95rem;
+            color: var(--text-main);
+            opacity: 0.85;
+            margin-bottom: 1rem;
+        }
+
+        .card-link {
+            color: var(--accent);
+            font-weight: 600;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        /* Detailed Era Page Layout */
+        .era-detail-container {
+            background: var(--card-bg);
+            padding: 3rem;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+            border: 1px solid rgba(212, 175, 55, 0.2);
+        }
+
+        .era-detail-header {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .era-detail-header img {
+            width: 400px;
+            max-width: 100%;
+            height: 250px;
+            object-fit: cover;
+            border-radius: 10px;
+            border: 2px solid var(--accent);
+        }
+
+        .reference-box {
+            background: rgba(212, 175, 55, 0.08);
+            border-left: 4px solid var(--accent);
+            padding: 1.5rem;
+            border-radius: 0 8px 8px 0;
+            margin-top: 2rem;
+        }
+
+        .reference-box h4 {
+            color: var(--accent);
+            margin-bottom: 0.5rem;
+        }
+
+        /* Interactive Quiz Section */
+        .quiz-box {
+            background: var(--card-bg);
+            padding: 2.5rem;
+            border-radius: 16px;
+            border: 1px solid var(--accent);
+            max-width: 700px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .quiz-options {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .quiz-btn {
+            background: rgba(212, 175, 55, 0.1);
+            border: 1px solid var(--accent);
+            padding: 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: 'Sarabun', sans-serif;
+            font-size: 1rem;
+            color: var(--text-main);
+            transition: var(--transition);
+        }
+
+        .quiz-btn:hover {
+            background: var(--accent);
+            color: #1a2530;
+        }
+
+        /* Footer */
+        footer {
+            background: #1a2530;
+            color: #fff;
+            text-align: center;
+            padding: 2rem;
+            margin-top: 4rem;
+            border-top: 2px solid var(--accent);
+        }
+
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+                flex-direction: column;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                width: 100%;
+                background: #1a2530;
+                padding: 1.5rem;
+                box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+            }
+
+            .nav-links.show {
+                display: flex;
+            }
+
+            .menu-toggle {
+                display: flex;
+            }
+
+            .hero-banner h1 {
+                font-size: 2rem;
+            }
+
+            .era-detail-header {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body data-theme="light">
+
+    <!-- Header & Navigation -->
+    <header>
+        <div class="nav-container">
+            <div class="logo" onclick="switchPage('home')">
+                <i class="fa-solid fa-monument"></i> SiamChronicle
+            </div>
+            <ul class="nav-links" id="navLinks">
+                <li><a onclick="switchPage('home')" id="link-home" class="active">หน้าแรก</a></li>
+                <li><a onclick="switchPage('ancient')" id="link-ancient">ยุคโบราณ</a></li>
+                <li><a onclick="switchPage('sukhothai')" id="link-sukhothai">สุโขทัย</a></li>
+                <li><a onclick="switchPage('ayutthaya')" id="link-ayutthaya">อยุธยา</a></li>
+                <li><a onclick="switchPage('rattanakosin')" id="link-rattanakosin">รัตนโกสินทร์</a></li>
+                <li><a onclick="switchPage('quiz')" id="link-quiz">แบบทดสอบความรู้</a></li>
+            </ul>
+            <div class="tools">
+                <button class="theme-toggle" onclick="toggleTheme()" title="เปลี่ยนธีมสี">
+                    <i class="fa-solid fa-moon" id="themeIcon"></i>
+                </button>
+                <button class="menu-toggle" onclick="toggleMenu()" title="เมนูหลัก">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Dynamic Content Container -->
+    <main>
+
+        <!-- 1. HOME PAGE -->
+        <section id="page-home" class="page-section active">
+            <div class="hero-banner">
+                <h1>ประวัติศาสตร์ชาติไทยเสมือนจริง</h1>
+                <p>สำรวจรากเหง้า อารยธรรม และการเปลี่ยนผ่านทางประวัติศาสตร์จากยุคโบราณ สู่ยุคปัจจุบัน ค้นคว้าผ่านแหล่งข้อมูลเชิงวิชาการที่เชื่อถือได้</p>
+                <button class="btn-gold" onclick="switchPage('sukhothai')">เริ่มสำรวจเส้นทางประวัติศาสตร์</button>
+            </div>
+
+            <h2 class="section-title">เลือกยุคสมัยเพื่อศึกษาข้อมูลเชิงลึก</h2>
+            <div class="timeline-grid">
+                <div class="era-card" onclick="switchPage('ancient')">
+                    <img src="https://images.unsplash.com/photo-1599661046862-2f342f1b7ff3?auto=format&fit=crop&w=600&q=80" alt="ยุคโบราณ" class="era-img">
+                    <div class="era-content">
+                        <div>
+                            <h3>ยุคก่อนประวัติศาสตร์ & รัฐโบราณ</h3>
+                            <p>จากชุมชนบ้านเชียง สู่ความรุ่งเรืองของทวารวดี ศรีวิชัย และละโว้ ศูนย์กลางอารยธรรมแรกเริ่ม</p>
+                        </div>
+                        <span class="card-link">ศึกษาต่อ <i class="fa-solid fa-arrow-right"></i></span>
+                    </div>
+                </div>
+
+                <div class="era-card" onclick="switchPage('sukhothai')">
+                    <img src="https://images.unsplash.com/photo-1548013146-72479768bada?auto=format&fit=crop&w=600&q=80" alt="สุโขทัย" class="era-img">
+                    <div class="era-content">
+                        <div>
+                            <h3>สมัยสุโขทัย (พ.ศ. 1792 - 2006)</h3>
+                            <p>รุ่งอรุณแห่งความสุข การประดิษฐ์อักษรไทย และคติการปกครองแบบธรรมราชาอันทรงคุณค่า</p>
+                        </div>
+                        <span class="card-link">ศึกษาต่อ <i class="fa-solid fa-arrow-right"></i></span>
+                    </div>
+                </div>
+
+                <div class="era-card" onclick="switchPage('ayutthaya')">
+                    <img src="https://images.unsplash.com/photo-1569154941061-e231b4725ef1?auto=format&fit=crop&w=600&q=80" alt="อยุธยา" class="era-img">
+                    <div class="era-content">
+                        <div>
+                            <h3>สมัยอยุธยา (พ.ศ. 1893 - 2310)</h3>
+                            <p>ราชธานียาวนาน 417 ปี ศูนย์กลางการค้าระหว่างประเทศ ระบบจตุสดมภ์ และความเจริญรุ่งเรืองสูงสุด</p>
+                        </div>
+                        <span class="card-link">ศึกษาต่อ <i class="fa-solid fa-arrow-right"></i></span>
+                    </div>
+                </div>
+
+                <div class="era-card" onclick="switchPage('rattanakosin')">
+                    <img src="https://images.unsplash.com/photo-1583508916104-2b4aed7c3f7d?auto=format&fit=crop&w=600&q=80" alt="รัตนโกสินทร์" class="era-img">
+                    <div class="era-content">
+                        <div>
+                            <h3>สมัยรัตนโกสินทร์ (พ.ศ. 2325 - ปัจจุบัน)</h3>
+                            <p>การสถาปนากรุง การปฏิรูปประเทศสู้ความทันสมัย และการเปลี่ยนแปลงสู่ระบอบประชาธิปไตย</p>
+                        </div>
+                        <span class="card-link">ศึกษาต่อ <i class="fa-solid fa-arrow-right"></i></span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 2. ANCIENT PAGE -->
+        <section id="page-ancient" class="page-section">
+            <div class="era-detail-container">
+                <div class="era-detail-header">
+                    <img src="https://images.unsplash.com/photo-1599661046862-2f342f1b7ff3?auto=format&fit=crop&w=800&q=80" alt="โบราณวัตถุ">
+                    <div>
+                        <h2 style="color:var(--accent); font-family:'Playfair Display',serif; font-size:2rem; margin-bottom:1rem;">ยุคก่อนประวัติศาสตร์และรัฐโบราณ</h2>
+                        <p><strong>ช่วงเวลา:</strong> มากกว่า 500,000 ปีมาแล้ว - พุทธศตวรรษที่ 18</p>
+                        <p style="margin-top:10px;">ดินแดนไทยในอดีตเป็นแหล่งอารยธรรมที่มีมนุษย์อยู่อาศัยต่อเนื่องยาวนาน ค้นพบหลักฐานเครื่องมือหินและโลหะสำริดที่บ้านเชียง ต่อมาพัฒนาเป็นอาณาจักรโบราณ เช่น ทวารวดี ศรีวิชัย และละโว้ ซึ่งมีอิทธิพลทางวัฒนธรรมอินเดียอย่างลึกซึ้ง</p>
+                    </div>
+                </div>
+                <h3>เหตุการณ์และหลักฐานสำคัญ</h3>
+                <ul style="margin-left: 20px; margin-top: 15px; display: flex; flex-direction: column; gap: 10px;">
+                    <li><strong>ยุคหินและสำริด:</strong> การขุดพบเครื่องมือหินกระเทาะและแหล่งโบราณคดีบ้านเชียง (มรดกโลก)</li>
+                    <li><strong>อาณาจักรทวารวดี (พุทธศตวรรษที่ 11-16):</strong> ศูนย์กลางที่จังหวัดนครปฐม เด่นเรื่องธรรมจักรศิลาและศิลาจารึกภาษาสันสกฤต</li>
+                    <li><strong>อาณาจักรศรีวิชัย:</strong> ความรุ่งเรืองทางพุทธศาสนานิกายมหายานทางภาคใต้ของไทย</li>
+                </ul>
+                <div class="reference-box">
+                    <h4>แหล่งอ้างอิงทางวิชาการ</h4>
+                    <p>กรมศิลปากร. (2550). ประวัติศาสตร์ไทยสมัยโบราณ. กรุงเทพฯ: สำนักพิมพ์กรมศิลปากร.<br>สุจิตต์ วงษ์เทศ. (2545). สุวรรณภูมิไม่ใช่ประเทศไทย แต่อยู่ในประเทศไทย. สำนักพิมพ์มติชน.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. SUKHOTHAI PAGE -->
+        <section id="page-sukhothai" class="page-section">
+            <div class="era-detail-container">
+                <div class="era-detail-header">
+                    <img src="https://images.unsplash.com/photo-1548013146-72479768bada?auto=format&fit=crop&w=800&q=80" alt="อุทยานประวัติศาสตร์สุโขทัย">
+                    <div>
+                        <h2 style="color:var(--accent); font-family:'Playfair Display',serif; font-size:2rem; margin-bottom:1rem;">สมัยสุโขทัย (รุ่งอรุณแห่งความสุข)</h2>
+                        <p><strong>ช่วงเวลา:</strong> พ.ศ. 1792 – พ.ศ. 2006 (214 ปี)</p>
+                        <p style="margin-top:10px;">เริ่มต้นเมื่อพ่อขุนศรีอินทราทิตย์ทรงขับไล่อำนาจขอมสบาดโขลญลำพงและสถาปนากรุงสุโขทัย โดดเด่นด้วยการปกครองแบบ "พ่อปกครองลูก" และเปลี่ยนเป็น "ธรรมราชา" ในสมัยพระมหาธรรมราชาที่ 1 (ลิไทย)</p>
+                    </div>
+                </div>
+                <h3>เหตุการณ์และมรดกสำคัญ</h3>
+                <ul style="margin-left: 20px; margin-top: 15px; display: flex; flex-direction: column; gap: 10px;">
+                    <li><strong>การประดิษฐ์อักษรไทย:</strong> พ่อขุนรามคำแหงมหาราชทรงประดิษฐ์ "ลายสือไทย" เมื่อ พ.ศ. 1826</li>
+                    <li><strong>เศรษฐกิจเสรี:</strong> ปรากฏข้อความในศิลาจารึกหลักที่ 1 "ใครจักใคร่ค้าค้า ไพร่ฟ้าหน้าใส"</li>
+                    <li><strong>สถาปัตยกรรม:</strong> เจดีย์ทรงพุ่มข้าวบิณฑ์ (ทรงดอกบัวตูม) และพระพุทธรูปปางลีลาอันอ่อนช้อย</li>
+                </ul>
+                <div class="reference-box">
+                    <h4>แหล่งอ้างอิงทางวิชาการ</h4>
+                    <p>ประเสริฐ ณ นคร. (2534). ประวัติศาสตร์เบ็ดเตล็ด. กรุงเทพฯ: มหาวิทยาลัยเกษตรศาสตร์.<br>ศิลาจารึกสุโขทัย หลักที่ 1 (ศิลาจารึกพ่อขุนรามคำแหง).</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. AYUTTHAYA PAGE -->
+        <section id="page-ayutthaya" class="page-section">
+            <div class="era-detail-container">
+                <div class="era-detail-header">
+                    <img src="https://images.unsplash.com/photo-1569154941061-e231b4725ef1?auto=format&fit=crop&w=800&q=80" alt="อยุธยาเมืองมรดกโลก">
+                    <div>
+                        <h2 style="color:var(--accent); font-family:'Playfair Display',serif; font-size:2rem; margin-bottom:1rem;">สมัยอยุธยา (ราชธานีอันยาวนาน)</h2>
+                        <p><strong>ช่วงเวลา:</strong> พ.ศ. 1893 – พ.ศ. 2310 (417 ปี)</p>
+                        <p style="margin-top:10px;">สถาปนาโดยสมเด็จพระรามาธิบดีที่ 1 (อู่ทอง) ผ่านการปกครอง 5 ราชวงศ์ เป็นศูนย์กลางการค้าระดับนานาชาติที่มีชาวต่างชาติต่างภาษาเข้ามาติดต่อค้าขายจำนวนมาก ก่อนจะเสียกรุงศรีอยุธยาในปี พ.ศ. 2310</p>
+                    </div>
+                </div>
+                <h3>เหตุการณ์และมรดกสำคัญ</h3>
+                <ul style="margin-left: 20px; margin-top: 15px; display: flex; flex-direction: column; gap: 10px;">
+                    <li><strong>การปฏิรูปการปกครอง:</strong> สมเด็จพระบรมไตรโลกนาถทรงจัดระเบียบการปกครองแบบ "จตุสดมภ์" (เวียง วัง คลัง นา) และระบบศักดินา</li>
+                    <li><strong>ยุคทองการค้าและทูตานุทูต:</strong> สมัยสมเด็จพระนารายณ์มหาราช มีการเจริญสัมพันธไมตรีกับฝรั่งเศสและชาติตะวันตก</li>
+                </ul>
+                <div class="reference-box">
+                    <h4>แหล่งอ้างอิงทางวิชาการ</h4>
+                    <p>นิธิ เอียวศรีวงศ์. (2529). การเมืองไทยสมัยพระเจ้ากรุงธนบุรี. สำนักพิมพ์มติชน.<br>เดชาพล ไชยวงค์. (2558). ประวัติศาสตร์อยุธยา: สังคม เศรษฐกิจ และการเมือง.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 5. RATTANAKOSIN PAGE -->
+        <section id="page-rattanakosin" class="page-section">
+            <div class="era-detail-container">
+                <div class="era-detail-header">
+                    <img src="https://images.unsplash.com/photo-1583508916104-2b4aed7c3f7d?auto=format&fit=crop&w=800&q=80" alt="กรุงเทพมหานคร">
+                    <div>
+                        <h2 style="color:var(--accent); font-family:'Playfair Display',serif; font-size:2rem; margin-bottom:1rem;">สมัยรัตนโกสินทร์</h2>
+                        <p><strong>ช่วงเวลา:</strong> พ.ศ. 2325 – ปัจจุบัน</p>
+                        <p style="margin-top:10px;">เริ่มต้นเมื่อพระบาทสมเด็จพระพุทธยอดฟ้าจุฬาโลกมหาราช (ร.1) ทรงย้ายราชธานีมายังฝั่งพระนคร ต่อมาในสมัยรัชกาลที่ 4-5 ทรงปฏิรูปประเทศครั้งใหญ่เพื่อรับมือกับการล่าอาณานิคม และเปลี่ยนแปลงการปกครองสู่ระบอบประชาธิปไตยใน พ.ศ. 2475</p>
+                    </div>
+                </div>
+                <h3>เหตุการณ์และมรดกสำคัญ</h3>
+                <ul style="margin-left: 20px; margin-top: 15px; display: flex; flex-direction: column; gap: 10px;">
+                    <li><strong>รัตนโกสินทร์ตอนต้น (ร.1-ร.3):</strong> ชำระกฎหมายตราสามดวง, สร้างวัดพระศรีรัตนศาสดาราม, ค้าขายรุ่งเรืองด้วยระบบเงินถุงแดง</li>
+                    <li><strong>ยุคปรับปรุงประเทศ (ร.4-ร.7):</strong> สนธิสัญญาเบอร์นีย์, การเลิกทาสและการปฏิรูประบบราชการสมัยรัชกาลที่ 5</li>
+                    <li><strong>ยุคประชาธิปไตย (พ.ศ. 2475 - ปัจจุบัน):</strong> การเปลี่ยนแปลงการปกครองและพัฒนาการทางรัฐธรรมนูญ</li>
+                </ul>
+                <div class="reference-box">
+                    <h4>แหล่งอ้างอิงทางวิชาการ</h4>
+                    <p>ธงชัย ระวินิจกุล. (2537). ชักนำสยาม: ประวัติศาสตร์ภูมินามวิทยาของสยาม.<br>สำนักงานจดหมายเหตุแห่งชาติ. เอกสารจดหมายเหตุการปฏิวัติสยาม พ.ศ. 2475.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 6. QUIZ PAGE -->
+        <section id="page-quiz" class="page-section">
+            <div class="quiz-box">
+                <h2 style="color:var(--accent); font-family:'Playfair Display',serif; margin-bottom:1rem;">ทดสอบความรู้ประวัติศาสตร์ไทย</h2>
+                <div id="quiz-container">
+                    <p id="quiz-question" style="font-size: 1.1rem; font-weight: 500; margin-bottom: 1.5rem;">พ่อขุนรามคำแหงมหาราชทรงประดิษฐ์อักษรไทย (ลายสือไทย) ในปีพุทธศักราชใด?</p>
+                    <div class="quiz-options" id="quiz-options">
+                        <button class="quiz-btn" onclick="checkAnswer(1)">ก. พ.ศ. 1826</button>
+                        <button class="quiz-btn" onclick="checkAnswer(2)">ข. พ.ศ. 1792</button>
+                        <button class="quiz-btn" onclick="checkAnswer(3)">ค. พ.ศ. 1893</button>
+                    </div>
+                </div>
+                <p id="quiz-result" style="margin-top: 1.5rem; font-weight: bold; font-size: 1.1rem;"></p>
+                <button class="btn-gold" id="quiz-reset" style="margin-top: 1.5rem; display: none;" onclick="resetQuiz()">ทำแบบทดสอบอีกครั้ง</button>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2026 SiamChronicle. พัฒนาขึ้นเพื่อเป็นแหล่งเรียนรู้ออนไลน์อ้างอิงได้จริง | สอดคล้องกับมาตรฐาน GitHub Pages</p>
+    </footer>
+
+    <!-- JavaScript สำหรับการทำงานหน้าเว็บแบบ Single-File SPA -->
+    <script>
+        function switchPage(pageId) {
+            const sections = document.querySelectorAll('.page-section');
+            sections.forEach(section => {
+                section.classList.remove('active');
+            });
+
+            const activeSection = document.getElementById('page-' + pageId);
+            if (activeSection) {
+                activeSection.classList.add('active');
+            }
+
+            const navLinks = document.querySelectorAll('.nav-links a');
+            navLinks.forEach(link => link.classList.remove('active'));
+            const activeLink = document.getElementById('link-' + pageId);
+            if (activeLink) {
+                activeLink.classList.add('active');
+            }
+
+            document.getElementById('navLinks').classList.remove('show');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function toggleMenu() {
+            const navLinks = document.getElementById('navLinks');
+            navLinks.classList.toggle('show');
+        }
+
+        function toggleTheme() {
+            const body = document.body;
+            const themeIcon = document.getElementById('themeIcon');
+            if (body.getAttribute('data-theme') === 'light') {
+                body.setAttribute('data-theme', 'dark');
+                themeIcon.classList.replace('fa-moon', 'fa-sun');
+            } else {
+                body.setAttribute('data-theme', 'light');
+                themeIcon.classList.replace('fa-sun', 'fa-moon');
+            }
+        }
+
+        function checkAnswer(choice) {
+            const resultText = document.getElementById('quiz-result');
+            const options = document.querySelectorAll('.quiz-btn');
+            
+            options.forEach(btn => btn.style.pointerEvents = 'none');
+
+            if (choice === 1) {
+                resultText.style.color = '#27ae60';
+                resultText.innerHTML = '🎉 ถูกต้อง! พ่อขุนรามคำแหงมหาราชทรงประดิษฐ์อักษรไทยเมื่อ พ.ศ. 1826';
+            } else {
+                resultText.style.color = '#c0392b';
+                resultText.innerHTML = '❌ ยังไม่ถูกต้อง คำตอบที่ถูกต้องคือ พ.ศ. 1826';
+            }
+            document.getElementById('quiz-reset').style.display = 'inline-block';
+        }
+
+        function resetQuiz() {
+            const options = document.querySelectorAll('.quiz-btn');
+            options.forEach(btn => btn.style.pointerEvents = 'auto');
+            document.getElementById('quiz-result').innerHTML = '';
+            document.getElementById('quiz-reset').style.display = 'none';
+        }
+    </script>
+</body>
+</html>
